@@ -1,1 +1,12 @@
 *.pdf
+*.txt
+!requirements_kg.txt
+*.md
+*.json
+*.csv
+*.html
+*.js
+*.css
+*.graphml
+*.DS_Store
+*.cpython-311.pyc
