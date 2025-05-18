@@ -1,5 +1,8 @@
-# pdf_parser.py
-import os
+"""
+This is the Step 1 in building our knowledge graph.
+The methods listed here extract text from pdfs 
+and then stores them in a txt file (one for each of the pdf)
+"""
 import sys
 from pathlib import Path
 import PyPDF2

@@ -1,10 +1,15 @@
-# text_preprocessor.py
-import os
+"""
+This is Step 2 in building our knowledge graph
+A set of methods to clean and preprocess text data
+Step 1 SHOULD HAVE BEEN completed, i.e. the PDF files should've been parsed and 
+the results stored.
+"""
 import re
+import sys
 import string
-import nltk
 from pathlib import Path
 from tqdm import tqdm
+import nltk
 
 # Download necessary NLTK resources (run once)
 try:
@@ -18,7 +23,7 @@ except LookupError:
 
 class TextPreprocessor:
     """
-    A class for preprocessing and cleaning text data.
+    A class to clean and preprocess text data.
     """
     
     def __init__(self, input_dir=None, output_dir=None):
@@ -42,6 +47,7 @@ class TextPreprocessor:
     def preprocess_text(self, text):
         """
         Preprocess text data.
+        Removes URLs and Email addresses.
         
         Args:
             text: Input text
@@ -84,11 +90,11 @@ class TextPreprocessor:
     
     def preprocess_file(self, file_path, save=True):
         """
-        Preprocess a single text file and optionally save the preprocessed text.
+        Process a single text file and optionally save the processed text.
         
         Args:
             file_path: Path to the text file
-            save: Whether to save the preprocessed text to a file
+            save: Whether to save the processed text to a file
             
         Returns:
             Preprocessed text as a string
@@ -116,7 +122,7 @@ class TextPreprocessor:
     
     def preprocess_directory(self):
         """
-        Preprocess all text files in the input directory.
+        Process all text files in the input directory.
         """
         if not self.input_dir:
             print("No input directory specified.")
@@ -141,7 +147,6 @@ def main():
     """
     Main function for command-line usage.
     """
-    import sys
     
     # Check command-line arguments
     if len(sys.argv) < 2:

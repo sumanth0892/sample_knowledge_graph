@@ -1,18 +1,26 @@
-# knowledge_graph_builder.py
-import os
+"""
+This is STEP 5 while building the knowledge graph, following
+Step 1: PDF/Input data parsing
+Step 2: Text preprocessing cleaning
+Step 3: Entity extraction
+Step 4: Relationship extraction
+"""
 import json
+import random
+import argparse
+from collections import Counter
+from tqdm import tqdm
+from neo4j import GraphDatabase
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 from pyvis.network import Network
-from tqdm import tqdm
-import random
-from collections import Counter
+from neo4j import GraphDatabase
 
 class KnowledgeGraphBuilder:
     """
-    A class for building and visualizing a knowledge graph from extracted entities and relationships.
+    A class to construct and visualize a knowledge graph from extracted entities and relationships.
     """
     
     def __init__(self, entities_dir=None, relationships_dir=None, output_dir=None):
@@ -452,12 +460,6 @@ class KnowledgeGraphBuilder:
             user: Neo4j username
             password: Neo4j password
         """
-        try:
-            from neo4j import GraphDatabase
-        except ImportError:
-            print("Neo4j driver not installed. Install with: pip install neo4j")
-            return
-        
         print("Exporting knowledge graph to Neo4j...")
         
         # Connect to Neo4j
@@ -530,8 +532,8 @@ class KnowledgeGraphBuilder:
                 betweenness_centrality = nx.betweenness_centrality(self.graph)
                 top_nodes = sorted(betweenness_centrality.items(), key=lambda x: x[1], reverse=True)[:10]
                 analysis["centrality"]["betweenness"] = {node: value for node, value in top_nodes}
-            except:
-                print("Betweenness centrality calculation skipped (graph too large)")
+            except Exception as e:
+                print(f"Betweenness centrality calculation skipped (graph too large), {e}")
         
         # Calculate eigenvector centrality for the top 10 nodes (if the graph is not too large)
         if self.graph.number_of_nodes() <= 1000:
@@ -539,8 +541,8 @@ class KnowledgeGraphBuilder:
                 eigenvector_centrality = nx.eigenvector_centrality(self.graph, max_iter=1000)
                 top_nodes = sorted(eigenvector_centrality.items(), key=lambda x: x[1], reverse=True)[:10]
                 analysis["centrality"]["eigenvector"] = {node: value for node, value in top_nodes}
-            except:
-                print("Eigenvector centrality calculation skipped (graph too large or did not converge)")
+            except Exception as e:
+                print(f"Eigenvector centrality calculation skipped (graph too large or did not converge), {e}")
         
         # Save analysis to file
         analysis_path = self.output_dir / "graph_analysis.json"
@@ -550,7 +552,7 @@ class KnowledgeGraphBuilder:
         print(f"Graph analysis saved to {analysis_path}")
         return analysis
     
-    def save_graph(self, format='graphml'):
+    def save_graph(self, file_format='graphml'):
         """
         Save the knowledge graph to a file.
         Args:
@@ -570,18 +572,18 @@ class KnowledgeGraphBuilder:
                 if isinstance(value, list):
                     export_graph.edges[u, v][key] = ';'.join(str(item) for item in value)
         
-        if format == 'graphml':
+        if file_format == 'graphml':
             output_path = self.output_dir / "knowledge_graph.graphml"
             nx.write_graphml(export_graph, output_path)
-        elif format == 'gexf':
+        elif file_format == 'gexf':
             output_path = self.output_dir / "knowledge_graph.gexf"
             nx.write_gexf(export_graph, output_path)
         else:
-            output_path = self.output_dir / f"knowledge_graph.{format}"
-            if hasattr(nx, f"write_{format}"):
-                getattr(nx, f"write_{format}")(export_graph, output_path)
+            output_path = self.output_dir / f"knowledge_graph.{file_format}"
+            if hasattr(nx, f"write_{file_format}"):
+                getattr(nx, f"write_{file_format}")(export_graph, output_path)
             else:
-                print(f"Format {format} not supported")
+                print(f"Format {file_format} not supported")
                 return
         
         print(f"Saved knowledge graph to {output_path}")
@@ -590,9 +592,6 @@ def main():
     """
     Main function for command-line usage.
     """
-    import sys
-    import argparse
-    
     parser = argparse.ArgumentParser(description='Build and visualize a knowledge graph from extracted entities and relationships.')
     parser.add_argument('--entities', required=True, help='Directory containing entity JSON files')
     parser.add_argument('--relationships', required=True, help='Directory containing relationship JSON files')
@@ -612,7 +611,7 @@ def main():
     
     # Build and save the graph
     builder.build_graph_from_directories()
-    builder.save_graph(format='graphml')
+    builder.save_graph(file_format='graphml')
     builder.save_graph_data_as_csv()
     
     # Analyze the graph

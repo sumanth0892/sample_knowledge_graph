@@ -1,18 +1,22 @@
-# entity_extractor.py
-import os
+"""
+This is STEP 3 while building the knowledge graph.
+Entity extractor obtains the various entities such as names of authors,
+names of proteins and objects
+The two previous steps are PDF parsing and Text preprocessing.
+"""
 import sys
 import re
-import spacy
-import pandas as pd
 import yaml
 import json
 from pathlib import Path
 from tqdm import tqdm
 from collections import defaultdict, Counter
+import spacy
+import pandas as pd
 
 class EntityExtractor:
     """
-    A class for extracting domain-specific entities from text.
+    A class to extract domain-specific entities from text.
     """
     
     def __init__(self, domain_terms_file=None, input_dir=None, output_dir=None):
@@ -90,6 +94,7 @@ class EntityExtractor:
     
     def extract_entities(self, text):
         """
+        Core function
         Extract domain-specific entities from text.
         
         Args:

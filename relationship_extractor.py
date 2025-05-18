@@ -1,17 +1,25 @@
-# relationship_extractor.py
-import os
+"""
+This is STEP 4 while building the knowledge graph
+This script extracts various relationships amongst entities
+"""
 import re
-import spacy
-import pandas as pd
-import yaml
+import sys
 import json
 from pathlib import Path
 from tqdm import tqdm
-from collections import defaultdict, Counter
+from collections import Counter
+import yaml
+import spacy
+import pandas as pd
 
 class RelationshipExtractor:
     """
     A class for extracting relationships between entities in text.
+    This has multiple extraction methods such as:
+    Pattern-based matching
+    Verb mapping
+    Dependency parsing
+    Position-based analysis
     """
     
     def __init__(self, domain_terms_file=None, entities_dir=None, text_dir=None, output_dir=None):
@@ -390,7 +398,6 @@ def main():
     """
     Main function for command-line usage.
     """
-    import sys
     
     # Check command-line arguments
     if len(sys.argv) < 4:
